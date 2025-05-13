@@ -9,6 +9,7 @@ const HeroDownloadBanner = () => {
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const [dots, setDots] = useState<Dot[]>([]);
   const [brightDots, setBrightDots] = useState(new Set<number>());
+  const [screenSize, setScreenSize] = useState({ width: 0, height: 0 });
   const patternIndex = useRef(0);
   const intervalId = useRef<number | null>(null);
   const timeoutId = useRef<number | null>(null);
@@ -16,18 +17,29 @@ const HeroDownloadBanner = () => {
   const DOT_SIZE = 20;
   const SPACING = DOT_SIZE + 15;
   const PATTERN_DURATION = 5000;
-  const BORDER_TOP = 32;
-  const BORDER_BOTTOM = 32;
-  const BORDER_LEFT = 32;
-  const BORDER_RIGHT = 32;
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Get responsive border values based on screen size
+  const getBorders = () => {
+    const width = screenSize.width;
+    if (width >= 768) {
+      // md breakpoint
+      return { top: 32, bottom: 32, left: 32, right: 32 };
+    } else if (width >= 640) {
+      // sm breakpoint
+      return { top: 24, bottom: 24, left: 24, right: 24 };
+    } else {
+      return { top: 16, bottom: 16, left: 16, right: 16 };
+    }
+  };
 
   useEffect(() => {
     const update = () => {
       if (!containerRef.current) return;
       const { offsetWidth: width, offsetHeight: height } = containerRef.current;
       setLayout({ width, height });
+      setScreenSize({ width: window.innerWidth, height: window.innerHeight });
     };
     update();
     window.addEventListener('resize', update);
@@ -37,6 +49,13 @@ const HeroDownloadBanner = () => {
   useEffect(() => {
     const { width: w, height: h } = layout;
     if (!w || !h) return;
+
+    const borders = getBorders();
+    const BORDER_TOP = borders.top;
+    const BORDER_BOTTOM = borders.bottom;
+    const BORDER_LEFT = borders.left;
+    const BORDER_RIGHT = borders.right;
+
     const topY = BORDER_TOP / 2 - DOT_SIZE / 2;
     const botY = h - BORDER_BOTTOM / 2 - DOT_SIZE / 2;
     const leftX = BORDER_LEFT / 2 - DOT_SIZE / 2;
@@ -58,7 +77,7 @@ const HeroDownloadBanner = () => {
     for (let i = countV - 1; i >= 0; i--)
       newDots.push({ x: leftX, y: BORDER_TOP + i * stepY });
     setDots(newDots);
-  }, [layout]);
+  }, [layout, screenSize]);
 
   const patterns = React.useMemo(
     () => [
@@ -120,13 +139,19 @@ const HeroDownloadBanner = () => {
     <div className='w-full flex items-center justify-center'>
       <div
         ref={containerRef}
-        className='w-full h-128 bg-[#D61919] rounded-lg overflow-hidden relative'
+        className='w-full min-h-[36rem] sm:min-h-[40rem] md:h-128 relative overflow-visible'
       >
+        {/* RED BACKGROUND with lights */}
+        <div className='absolute inset-0 bg-[#D61919] rounded-lg z-0' />
+
+        {/* Lights */}
         {dots.map(({ x, y }, i) => (
           <div
             key={i}
-            className={`absolute w-5 h-5 rounded-full bg-amber-200 z-10 shadow-lg ${
-              brightDots.has(i) ? 'bg-white shadow-yellow-300 shadow-2xl' : ''
+            className={`absolute w-5 h-5 rounded-full z-10 ${
+              brightDots.has(i)
+                ? 'bg-white shadow-yellow-300 shadow-2xl'
+                : 'bg-amber-200 shadow-md'
             }`}
             style={{
               left: `${x}px`,
@@ -137,52 +162,55 @@ const HeroDownloadBanner = () => {
             }}
           />
         ))}
+
+        {/* White content container */}
         <div
-          className='absolute inset-8 bg-white rounded-md z-20
-             flex flex-col divide-[#173885] divide-y-3 overflow-hidden'
+          className='absolute inset-4 sm:inset-6 md:inset-8 bg-white rounded-md z-5
+          flex flex-col divide-[#173885] divide-y-2 overflow-hidden text-wrap'
         >
-          {[
-            {
-              key: 'announce',
-              content: 'NOW ANNOUNCING',
-              size: 'text-5xl',
-              flex: 'flex-1',
-            },
-            {
-              key: 'app',
-              content: ['THE DILLO DAY MOBILE APP'],
-              size: 'text-6xl',
-              flex: 'flex-[2]',
-            },
-            {
-              key: 'scroll',
-              content: 'SCROLL DOWN FOR MORE',
-              size: 'text-3xl',
-              flex: 'flex-1',
-            },
-          ].map(({ key, content, size, flex }) => (
-            <div
-              key={key}
-              className={`${flex} flex flex-col items-center justify-center px-4`}
+          {/* Top content: NOW ANNOUNCING */}
+          <div className='flex-1 flex flex-col items-center justify-center px-4 py-2 text-center'>
+            <p className='w-full text-3xl md:text-6xl font-poppins font-semibold text-[#2E3171] leading-snug break-words text-balance'>
+              NOW ANNOUNCING
+            </p>
+          </div>
+
+          {/* Middle content: THE DILLO DAY MOBILE APP */}
+          <div className='flex-[2] flex flex-col items-center justify-center px-4 py-2 text-center'>
+            <p className='w-full text-5xl md:text-7xl font-rye font-semibold text-[#2E3171] leading-snug break-words text-balance'>
+              THE DILLO DAY MOBILE APP
+            </p>
+          </div>
+
+          {/* Bottom content: Store badges */}
+          <div className='flex-1 flex flex-row items-center justify-center gap-6 px-4 py-4'>
+            <a
+              href='https://play.google.com/store/apps/details?id=YOUR_APP_ID'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block w-48 h-24 md:w-58 md:h-52 transition-transform hover:scale-105'
+              aria-label='Download on Google Play'
             >
-              {Array.isArray(content) ? (
-                content.map((line, i) => (
-                  <p
-                    key={i}
-                    className={`w-full text-center ${size} font-semibold text-[#2E3171] leading-tight font-rye`}
-                  >
-                    {line}
-                  </p>
-                ))
-              ) : (
-                <p
-                  className={`w-full text-center ${size} font-semibold text-[#2E3171] leading-tight font-poppins`}
-                >
-                  {content}
-                </p>
-              )}
-            </div>
-          ))}
+              <img
+                src='/google-play.png'
+                alt='Download on Google Play'
+                className='w-full h-full object-contain'
+              />
+            </a>
+            <a
+              href='https://apps.apple.com/us/app/dillo-day-2025/id6745717280'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block w-40 h-14 md:w-52 md:h-16 transition-transform hover:scale-105'
+              aria-label='Download on the App Store'
+            >
+              <img
+                src='/app-store.svg'
+                alt='Download on the App Store'
+                className='w-full h-full object-contain'
+              />
+            </a>
+          </div>
         </div>
       </div>
     </div>
