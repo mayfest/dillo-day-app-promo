@@ -192,7 +192,7 @@ const HeroDownloadBanner = () => {
               aria-label='Download on Google Play'
             >
               <img
-                src='/google-play.png'
+                src={`${import.meta.env.BASE_URL}google-play.png`}
                 alt='Download on Google Play'
                 className='w-full h-full object-contain'
               />
@@ -205,7 +205,7 @@ const HeroDownloadBanner = () => {
               aria-label='Download on the App Store'
             >
               <img
-                src='/app-store.svg'
+                src={`${import.meta.env.BASE_URL}google-play.png`}
                 alt='Download on the App Store'
                 className='w-full h-full object-contain'
               />
