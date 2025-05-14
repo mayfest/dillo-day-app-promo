@@ -1,30 +1,32 @@
-name: Deploy Website
+name: Deploy to GitHub Pages
+
 on:
   push:
     branches:
       - main
+
 jobs:
-  deploy:
-    name: Deploy Website
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10.8.0
-      - uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'pnpm'
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      - name: Build website
+        run: pnpm install
+
+      - name: Build the project
         run: pnpm run build
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          publish_branch: release-build
-          user_name: github-actions[bot]
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          publish_branch: gh-pages
