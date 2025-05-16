@@ -185,7 +185,7 @@ const HeroDownloadBanner = () => {
           {/* Bottom content: Store badges */}
           <div className='flex-1 flex flex-row items-center justify-center gap-6 px-4 py-4'>
             <a
-              href='https://play.google.com/store/apps/details?id=YOUR_APP_ID'
+              href='https://github.com/ethanpaneraa/dillo-53-apk-host/releases/download/AndroidBuild/application-f83034e0-da7f-4506-a7e1-b00430e1d06a.apk'
               target='_blank'
               rel='noopener noreferrer'
               className='block w-48 h-24 md:w-58 md:h-52 transition-transform hover:scale-105'
