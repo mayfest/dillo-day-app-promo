@@ -135,6 +135,17 @@ const HeroDownloadBanner = () => {
     };
   }, [dots, patterns]);
 
+  const apkUrl =
+    'https://github.com/ethanpaneraa/dillo-53-apk-host/releases/download/AndroidBuild/application-f83034e0-da7f-4506-a7e1-b00430e1d06a.apk';
+
+  function handleGooglePlayClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault(); // stop the normal navigation for a moment
+    alert(
+      'The Google Pkay Store link is not available yet. You can however download the APK directly from here by accepting the prompt'
+    );
+    window.open(apkUrl, '_blank', 'noopener noreferrer');
+  }
+
   return (
     <div className='w-full flex items-center justify-center'>
       <div
@@ -185,11 +196,10 @@ const HeroDownloadBanner = () => {
           {/* Bottom content: Store badges */}
           <div className='flex-1 flex flex-row items-center justify-center gap-6 px-4 py-4'>
             <a
-              href='https://github.com/ethanpaneraa/dillo-53-apk-host/releases/download/AndroidBuild/application-f83034e0-da7f-4506-a7e1-b00430e1d06a.apk'
-              target='_blank'
-              rel='noopener noreferrer'
+              href={apkUrl}
+              onClick={handleGooglePlayClick}
               className='block w-48 h-24 md:w-58 md:h-52 transition-transform hover:scale-105'
-              aria-label='Download on Google Play'
+              aria-label='Download APK for Android'
             >
               <img
                 src={`${import.meta.env.BASE_URL}google-play.png`}
@@ -197,6 +207,7 @@ const HeroDownloadBanner = () => {
                 className='w-full h-full object-contain'
               />
             </a>
+
             <a
               href='https://apps.apple.com/us/app/dillo-day-2025/id6745717280'
               target='_blank'
